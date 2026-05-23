@@ -8,44 +8,44 @@ on:
             # - production
 
 
-    jobs:
-        # Job Name, Job Name can be anything but unique within the same file.
-        deploy-develop:
+jobs:
+    # Job Name, Job Name can be anything but unique within the same file.
+    deploy-develop:
 
-            # Condition to execute this job-setup only when push happen on develop branch
-            if: github.ref_name == 'develop'
+        # Condition to execute this job-setup only when push happen on develop branch
+        if: github.ref_name == 'develop'
 
-            # OS Like [ubuntu-latest, windows-latest, macOS-latest]
-            # runs-on: [ubuntu-latest, windows-latest, macOS-latest]
-            runs-on: ubuntu-latest
+        # OS Like [ubuntu-latest, windows-latest, macOS-latest]
+        # runs-on: [ubuntu-latest, windows-latest, macOS-latest]
+        runs-on: ubuntu-latest
 
-            # Need to associate this job with develop environment
-            environment: develop
+        # Need to associate this job with develop environment
+        environment: develop
 
-            steps:
-              - name: Print Branch Name
-                run: |
-                    echo "Current Branch: ${{ github.ref_name }}"
+        steps:
+          - name: Print Branch Name
+            run: |
+                echo "Current Branch: ${{ github.ref_name }}"
 
-              - name: Deploying to Develop
-                run: |
-                    echo "Deploying application to Develop environment"
+          - name: Deploying to Develop
+            run: |
+                echo "Deploying application to Develop environment"
 
-        deploy-staging:
-            if: github.ref_name == 'staging'
+    deploy-staging:
+        if: github.ref_name == 'staging'
 
-            runs-on: ubuntu-latest
+        runs-on: ubuntu-latest
 
-            environment: staging
+        environment: staging
 
-            steps:
-              - name: Print Branch Name
-                run: |
-                    echo "Current Branch: ${{ github.ref_name }}"
+        steps:
+          - name: Print Branch Name
+            run: |
+                echo "Current Branch: ${{ github.ref_name }}"
 
-              - name: Deploying To Staging
-                run: |
-                    echo "Deploying application to Staging Branch"
+          - name: Deploying To Staging
+            run: |
+                echo "Deploying application to Staging Branch"
 
 
 
