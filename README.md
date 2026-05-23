@@ -142,4 +142,26 @@ Observe the GitHub Actions Tab:
 	→	Observation 4
 		→	You will see the ```Current Branch: develop``` in Logs.
 
+***TASK 5***
+```Test Staging Deployment```
+
+Objective:
+	→	GitHub Actions Observe the workflow behavior.
+
+Practical:
+	→	Now modify any file and push to Staging Branch.
+
+Observe the GitHub Actions Tab:
+	→	Observation 1
+		→	Workflow Triggered
+
+	→	Observation 2
+		→	When the changes pushed to Staging branch, only develop branch triggered.
+
+	→	Observation 3
+		→	In this case, deploy-develop got skipped.
+
+	→	Observation 4
+		→	You will see the ```Current Branch: staging``` in Logs.
+
 
