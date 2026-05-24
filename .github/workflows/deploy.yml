@@ -4,8 +4,12 @@ on:
     push:
         branches:
             - develop
-            - staging
+            # - staging
             # - production
+
+    pull_request:
+        branches:
+            - staging
 
 
 jobs:
@@ -23,16 +27,41 @@ jobs:
         environment: develop
 
         steps:
-          - name: Print Branch Name
-            run: |
-                echo "Current Branch: ${{ github.ref_name }}"
+            # GITHUB ACTIONS CHECKOUT TO THE SOURCE BRANCH `DEVELOP` TO GET THE LATEST CODE
+          - name: Checkout Source
+            uses: action/checkout@v4
 
-          - name: Deploying to Develop
+            # CONFIGURE LOGIN CREDS FOR AWS CONSOLE TO PROCEED THE FURTHER THINGS
+          - name: Configure AWS Credentials
+            uses: uses: aws-actions/configure-aws-credentials@v4
+            with:
+                aws-access-key-id: ${{ AWS_ACCESS_KEY_ID }}
+                aws-secret-access-key: ${{ AWS_SECRET_ACCESS_KEY }}
+                aws-region: us-east-1
+
+          - name: Login to ECR
+            uses: aws-actions/amazon-ecr-login@v2
+
+          - name: Build Docker Image
             run: |
-                echo "Deploying application to Develop environment"
+                docker build -t my-tech-profile-dev .
+
+          - name: Tag Docker Image
+            run: |
+                docker tag my-tech-profile-dev:${{ github.sha }} \
+                    128833122451.dkr.ecr.us-east-1.amazonaws.com/my-tech-profile-develop:${{ github.sha }}
+
+          - name: Push Docker Image to AWS ECR
+            run: |
+                docker push 128833122451.dkr.ecr.us-east-1.amazonaws.com/my-tech-profile-develop:${{ github.sha }}
+
+
+
 
     deploy-staging:
-        if: github.ref_name == 'staging'
+        # if: github.ref_name == 'staging'      # ref_name represents the current branch name. From which the workflow is triggered.
+        if: github.base_ref == 'staging'        # base_ref used in pull_request event. It represents the target branch where you want to merge your changes through PR.
+        # In this case, changes push to develop branch and raise PR and then merge to staging branch.
 
         runs-on: ubuntu-latest
 
@@ -46,6 +75,8 @@ jobs:
           - name: Deploying To Staging
             run: |
                 echo "Deploying application to Staging Branch"
+
+    # imrsrivastava/staging/my-tech-profile
 
 
 
