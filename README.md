@@ -142,6 +142,8 @@ Observe the GitHub Actions Tab:
 	→	Observation 4
 		→	You will see the ```Current Branch: develop``` in Logs.
 
+---
+
 ***TASK 5***
 ```Test Staging Deployment```
 
@@ -163,5 +165,3 @@ Observe the GitHub Actions Tab:
 
 	→	Observation 4
 		→	You will see the ```Current Branch: staging``` in Logs.
-
-
