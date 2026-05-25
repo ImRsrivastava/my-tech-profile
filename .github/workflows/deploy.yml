@@ -95,15 +95,32 @@ jobs:
         environment: staging
 
         steps:
-          - name: Print Branch Name
-            run: |
-                echo "Current Branch: ${{ github.ref_name }}"
+          - name: Checkout to Source
+            uses: actions/checkout@v4
 
-          - name: Deploying To Staging
-            run: |
-                echo "Deploying application to Staging Branch"
+            # CONFIGURE LOGIN CREDS FOR AWS CONSOLE TO PROCEED THE FURTHER THINGS
+          - name: Configure AWS Credentials
+            uses: aws-actions/configure-aws-credentials
+            with: 
+                aws-access-key-id: ${{ STAGE_AWS_ACCESS_KEY_ID }}
+                aws-secret-access-key: ${{ STAGE_AWS_SECRET_ACCESS_KEY }}
 
-    # imrsrivastava/staging/my-tech-profile
+          - name: Login to ECR
+            uses: aws-actions/amazon-ecr-login
+
+          - name: Build Docker Image
+            run: |
+                docker build -t my-tech-profile-stage:${{github.sha}} .
+
+          - name: Tag Docker Image
+            run: |
+                docker tag my-tech-profile-stage:${{github.sha}} \
+                        128833122451.dkr.ecr.us-east-1.amazonaws.com/my-tech-profile-staging:${{github.sha}}
+
+          - name: Push Docker Image to AWS ECR
+            run: |
+                docker push 128833122451.dkr.ecr.us-east-1.amazonaws.com/my-tech-profile-staging:${{github.sha}}
+
 
 
 
