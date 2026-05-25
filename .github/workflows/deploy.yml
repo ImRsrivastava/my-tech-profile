@@ -59,7 +59,8 @@ jobs:
             # This step will fetch the current task definition in json format to update the task definition based on the latest docker image.
           - name: Fetch Current Task Definition
             run: |
-                aws-ecs describe-task-definition --task-definition Tech-Profile-TD-dev --query taskDefinition > task-definition.json
+                aws ecs describe-task-definition \
+                    --task-definition Tech-Profile-TD-dev --query taskDefinition > task-definition.json
 
 
             # These two steps is most important, if you want to use the latest pushed image to use on your application.
