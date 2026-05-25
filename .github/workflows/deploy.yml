@@ -100,13 +100,13 @@ jobs:
 
             # CONFIGURE LOGIN CREDS FOR AWS CONSOLE TO PROCEED THE FURTHER THINGS
           - name: Configure AWS Credentials
-            uses: aws-actions/configure-aws-credentials
+            uses: aws-actions/configure-aws-credentials@v4
             with: 
                 aws-access-key-id: ${{ secrets.STAGE_AWS_ACCESS_KEY_ID }}
                 aws-secret-access-key: ${{ secrets.STAGE_AWS_SECRET_ACCESS_KEY }}
 
           - name: Login to ECR
-            uses: aws-actions/amazon-ecr-login
+            uses: aws-actions/amazon-ecr-login@v2
 
           - name: Build Docker Image
             run: |
