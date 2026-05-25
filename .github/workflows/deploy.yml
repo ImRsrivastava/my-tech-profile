@@ -56,6 +56,26 @@ jobs:
                 docker push 128833122451.dkr.ecr.us-east-1.amazonaws.com/my-tech-profile-develop:${{ github.sha }}
 
 
+            # These two steps is most important, if you want to use the latest pushed image to use on your application.
+            # 'Render ECS Task Definition' step will use to render the task definition and update it with the latest docker image.
+          - name: Render ECS Task Definition
+            id: task-def
+            uses: aws-actions/amazon-ecs-render-task-definition@v1
+            with:
+                task-definition: task-definition.json
+                container-name: my-tech-profile
+                image: 128833122451.dkr.ecr.us-east-1.amazonaws.com/my-tech-profile-develop:${{ github.sha }}
+
+            # This 'Deploy ECS Task Definition' use to pull the latest docker image from ECR and run it inside the container. 
+          - name: Deploy ECS Task Definition
+            uses: aws-actions/amazon-ecs-deploy-task-definition@v2
+            with: 
+                task-definition: ${{ steps.task-def.outputs.task-definition }}
+                service: Tech-Profile-ECS-Service-dev
+                cluster: Tech-Profile-ECS-Dev
+                wait-for-service-stability: true
+
+
 
 
     deploy-staging:
