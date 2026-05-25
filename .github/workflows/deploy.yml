@@ -56,6 +56,12 @@ jobs:
                 docker push 128833122451.dkr.ecr.us-east-1.amazonaws.com/my-tech-profile-develop:${{ github.sha }}
 
 
+            # This step will fetch the current task definition in json format to update the task definition based on the latest docker image.
+          - name: Fetch Current Task Definition
+            run: |
+                aws-ecs describe-task-definition --task-definition Tech-Profile-TD-dev --query taskDefinition > task-definition.json
+
+
             # These two steps is most important, if you want to use the latest pushed image to use on your application.
             # 'Render ECS Task Definition' step will use to render the task definition and update it with the latest docker image.
           - name: Render ECS Task Definition
