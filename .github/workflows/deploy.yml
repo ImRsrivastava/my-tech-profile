@@ -102,8 +102,8 @@ jobs:
           - name: Configure AWS Credentials
             uses: aws-actions/configure-aws-credentials
             with: 
-                aws-access-key-id: ${{ STAGE_AWS_ACCESS_KEY_ID }}
-                aws-secret-access-key: ${{ STAGE_AWS_SECRET_ACCESS_KEY }}
+                aws-access-key-id: ${{ secrets.STAGE_AWS_ACCESS_KEY_ID }}
+                aws-secret-access-key: ${{ secrets.STAGE_AWS_SECRET_ACCESS_KEY }}
 
           - name: Login to ECR
             uses: aws-actions/amazon-ecr-login
