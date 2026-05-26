@@ -83,8 +83,6 @@ jobs:
                 wait-for-service-stability: true
 
 
-    # -----------------------------------------------------------------------------------------
-
 
     deploy-staging:
         # if: github.ref_name == 'staging'      # ref_name represents the current branch name. From which the workflow is triggered.
@@ -127,7 +125,7 @@ jobs:
             run: |
                 aws ecs describe-task-definition --task-definition Tech-Profile-TD-stage --query taskDefinition > task-definition.json
 
-          name: Render ECS Task Definition
+          - name: Render ECS Task Definition
             id: task-def
             uses: aws-actions/amazon-ecs-render-task-definition@v1
             with:
