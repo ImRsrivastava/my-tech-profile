@@ -83,6 +83,7 @@ jobs:
                 wait-for-service-stability: true
 
 
+    # -----------------------------------------------------------------------------------------
 
 
     deploy-staging:
@@ -121,6 +122,27 @@ jobs:
           - name: Push Docker Image to AWS ECR
             run: |
                 docker push 128833122451.dkr.ecr.us-east-1.amazonaws.com/my-tech-profile-staging:${{github.sha}}
+
+          - name: Fetch Current Task Definition
+            run: |
+                aws ecs describe-task-definition --task-definition Tech-Profile-TD-stage --query taskDefinition > task-definition.json
+
+          name: Render ECS Task Definition
+            id: task-def
+            uses: aws-actions/amazon-ecs-render-task-definition@v1
+            with:
+                task-definition: task-definition.json
+                container-name: my-tech-profile
+                image: 128833122451.dkr.ecr.us-east-1.amazonaws.com/my-tech-profile-staging:${{github.sha}}
+
+            # This 'Deploy ECS Task Definition' use to pull the latest docker image from ECR and run it inside the container. 
+          - name: Deploy ECS Task Definition
+            uses: aws-actions/amazon-ecs-deploy-task-definition@v2
+            with: 
+                task-definition: ${{ steps.task-def.outputs.task-definition }}
+                service: Tech-Profile-ECS-Service-Stage
+                cluster: Tech-Profile-ECS-Stage
+                wait-for-service-stability: true 
 
 
 
