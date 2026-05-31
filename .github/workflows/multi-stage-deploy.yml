@@ -163,3 +163,50 @@ jobs:
                 service: My-Tech-Profile-ECS-Service-Dev
                 cluster: My-Tech-Profile-ECS-Cluster-Dev
                 wait-for-service-stability: true
+
+
+    # Staging Deployment
+    Deploy-Staging:
+        if: github.event.pull_request.merged == true && github.base_ref == 'staging'
+
+        runs-on: ubuntu-latest
+
+        environment: staging
+
+        concurrency:
+            group: staging-deploy
+            cancel-in-progress: true
+
+        timeout-minutes: 20
+
+        steps:
+            # Configure AWS Credentials
+          - name: Configure AWS Credentials
+            uses: aws-actions/configure-aws-credentials@v4
+            with:
+                aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+                aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+                aws-region: ${{ env.AWS_REGION }}
+
+            # Fetch Current Task Definition
+          - name: Fetch Current Task Definition
+            run: |
+                aws ecs decribe-task-definition --task-definition My-Tech-Profile-TD-Stage --query TaskDefinition > task-definition.json
+
+            # Replace Old Image with Latest Image
+          - name: Replace Old Image with Latest Image
+            id: task-def
+            uses: aws-actions/amazon-ecs-render-task-definition@v1
+            with:
+                task-definition: task-definition.json
+                container-name: my-tech-profile
+                image: ${{ env.AWS_ECR_REGISTRY }}/${{ env.AWS_ECR_REPOSITORY }}:${{ github.event.pull_request.merge_commit_sha }}
+
+            # Deploy Latest Task Definition to ECS
+          - name: Deploy Latest Task Definition to ECS
+            uses: aws-actions/amazon-ecs-deploy-task-definition
+            with:
+                task-definition: ${{ steps.task-def.outputs.task-definition }}
+                cluster: My-Tech-Profile-ECS-Cluster-Dev
+                service: My-Tech-Profile-ECS-Service-Stage
+                wait-for-service-stability: true
