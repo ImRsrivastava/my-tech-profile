@@ -68,6 +68,8 @@ jobs:
 
         runs-on: ubuntu-latest
 
+        environment: develop
+
         # PREVENT MULTIPLE DOCKER IMAGE PUSH SIMULTANEOUSLY
         concurrency:
             group: develop-build
