@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { BsChevronDoubleRight } from "react-icons/bs";
 
 
@@ -23,18 +23,20 @@ const About = () => {
         },500);
     },[dateOfBirth]);
 
-    const calculateAge = () => {
+    const calculateAge = useCallback(() => {
         const today = new Date();
-        if(dateOfBirth !== null) {
-            const birthDate = new Date(dateOfBirth.split('-').reverse().join('-')); 
 
-            let age = today.getFullYear() - birthDate.getFullYear();
+        if (dateOfBirth) {
+            const birthDate = new Date(dateOfBirth);
+            let ageValue = today.getFullYear() - birthDate.getFullYear();
             const monthDiff = today.getMonth() - birthDate.getMonth();
-        
-            if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) { age--; }
-            setAge(age);
+
+            if ( monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate()) ) {
+                ageValue--;
+            }
+            setAge(ageValue);
         }
-    };
+    }, [dateOfBirth]);
 
 
     return (
@@ -42,11 +44,11 @@ const About = () => {
             <section id="about" className="about section fade-up-animate">
                 <div className="container section-title">
                     <h2>About</h2>
-                    <p className="mb-3">I am a <b>Senior Backend Engineer with over 5 years of experience</b> in designing, developing, and deploying secure, scalable, and high-performance backend applications. My primary focus is building robust backend systems using <b>Python (FastAPI), Laravel, and Node.js</b>, with an emphasis on clean architecture, performance optimization, and maintainable code.</p> 
+                    <p className="mb-3">AWS Cloud Engineer with hands-on experience in designing, provisioning, and managing cloud infrastructure on AWS. Skilled in Infrastructure as Code (Terraform), containerization using Docker, and deployment of containerized applications on Amazon ECS using ECR and RDS PostgreSQL.</p> 
                     
-                    <p className="mb-3">Throughout my professional journey, I have worked extensively on building <b>production-ready RESTful APIs</b>, implementing secure authentication systems, and designing backend architectures that support scalable applications. I have strong experience in implementing <b>JWT-based authentication, Role-Based Access Control (RBAC), middleware-based request handling, and secure API design</b>, ensuring systems are reliable and aligned with modern backend development standards.</p>
+                    <p className="mb-3">Experienced in building reusable Terraform modules, configuring CI/CD pipelines using GitHub Actions, and managing secure AWS networking using VPC, IAM, Security Groups, and EC2. Strong understanding of Linux administration, cloud automation, monitoring, and scalable backend deployments using FastAPI and PostgreSQL.</p>
                     
-                    <p className="mb-3">I have hands-on experience with <b>database design and optimization</b>, primarily using <b>MySQL and PostgreSQL</b>. My approach focuses on writing efficient queries, designing normalized database schemas, and ensuring high performance in data-driven applications.</p>
+                    <p className="mb-3">Additionally experienced in backend application development using FastAPI, Laravel, and Node.js with focus on REST APIs, authentication systems, and cloud-native application architecture.</p>
                 </div>
 
                 <div className="container">

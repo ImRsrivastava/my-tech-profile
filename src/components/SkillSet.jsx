@@ -1,9 +1,7 @@
-import React, { useEffect, useRef, useState } from "react";
-import { useLocation } from "react-router-dom";
+import { useEffect, useState } from "react";
 
 
 const SkillSet = () => {
-    const location = useLocation ();
     const [skillSet, setSkillSet] = useState([
         { name: "PHP", percent: "0%" },
         { name: "Laravel", percent: "0%" },

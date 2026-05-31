@@ -1,5 +1,5 @@
-import React, { useEffect, useRef } from "react";
-import Typed from 'typed.js';
+import { useEffect, useRef } from "react";
+import Typed from "typed.js";
 import { Link } from "react-router-dom";
 import { FaLinkedin, FaSquareGithub } from "react-icons/fa6";
 import bgImage from "../../assets/images/background-img.png";
@@ -29,8 +29,8 @@ const Index = () => {
                     <div className="row justify-content-center">
                         <div className="offset-3 col-lg-8">
                             <h2><i> Rishabh Srivastava </i></h2>
-                            <p>I'm a &nbsp;
-                                <span ref={el} className="typed" data-typed-items="AWS Cloud & DevOps Engineer, AWS Infra Engineer, Senior Backend Engineer, Cloud & Infrastructure Engineer"></span>
+                            <p>I&apos;m a &nbsp;
+                                <span ref={el} className="typed" data-typed-items="AWS Cloud and DevOps Engineer, AWS Infra Engineer, Senior Backend Engineer, Cloud and Infrastructure Engineer"></span>
                                 <span className="typed-cursor typed-cursor--blink" aria-hidden="true"></span>
                             </p>
                             <div className="social-links">

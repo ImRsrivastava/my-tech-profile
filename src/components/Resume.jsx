@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 
 
 const Resume = () => {
@@ -15,17 +15,17 @@ const Resume = () => {
 
     return (
         <>
-            <section id="resume" class="resume section">
-                <div class="container section-title">
+            <section id="resume" className="resume section">
+                <div className="container section-title">
                     <h2>Resume</h2>
                     {/* <p>I'm Rishabh Srivastava, a Software developer with4+ years of experience. My journey started in the world of technology with </p> */}
                 </div>
 
-                <div class="container">
-                    <div class="row">
-                        <div class="col-lg-6 fade-lr">
-                            <h3 class="resume-title">Professional Summary</h3>
-                            <div class="resume-item pb-0">
+                <div className="container">
+                    <div className="row">
+                        <div className="col-lg-6 fade-lr">
+                            <h3 className="resume-title">Professional Summary</h3>
+                            <div className="resume-item pb-0">
                                 <h4>Rishabh Srivastava</h4>
                                 <p><em>Experienced web application developer with 4+ years in PHP, Laravel, MySql, MongoDB, jQuery, React.js, Node.js and GitHub. Proficient in building scalable web application and APIs, with a focus on delivering robust solutions. I also have practical experience with DevOps tools such as Jenkins, Ansible, Docker and Kubernetes. A strong problem solver and collaborative team player committed to efficiently achieving project objectives.</em></p>
                                 <ul>
@@ -35,20 +35,20 @@ const Resume = () => {
                                 </ul>
                             </div>
 
-                            <h3 class="resume-title">Education & Certification</h3>
-                            <div class="resume-item">
+                            <h3 className="resume-title">Education & Certification</h3>
+                            <div className="resume-item">
                                 <h4>High School (10th)</h4>
                                 <h5>2010</h5>
                                 <p><em>Guru Nanak Inter College, Mirzapur (UP)</em></p>
                                 <p>Completed High School from Guru Nanak Inter College, Mirzapur in 2010 with 51%.</p>
                             </div>
-                            <div class="resume-item">
+                            <div className="resume-item">
                                 <h4>Intermediate (12th)</h4>
                                 <h5>2012</h5>
                                 <p><em>Basant Vidyalaya Intermediate College, Mirzapur (UP)</em></p>
                                 <p>Completed 12th from Basant Vidyalaya Intermediate College, Mirzapur in 2012 with 54%.</p>
                             </div>
-                            <div class="resume-item">
+                            <div className="resume-item">
                                 <h4>Bachelor of Commerce (B.com)</h4>
                                 <h5>2015</h5>
                                 <p><em>Vindhyawasini Mahavidyalaya, Mirzapur (UP)</em></p>
@@ -56,9 +56,9 @@ const Resume = () => {
                             </div>
                         </div>
 
-                        <div class="col-lg-6 fade-rl">
-                            <h3 class="resume-title">Professional Experience</h3>
-                            <div class="resume-item">
+                        <div className="col-lg-6 fade-rl">
+                            <h3 className="resume-title">Professional Experience</h3>
+                            <div className="resume-item">
                                 <h4>Software Developer</h4>
                                 <h5>September 2021 - Present</h5>
                                 <p><em>Cyber Infrastructure Pvt. Ltd, Indore (MP)</em></p>
@@ -70,7 +70,7 @@ const Resume = () => {
                                 </ul>
                             </div>
 
-                            <div class="resume-item">
+                            <div className="resume-item">
                                 <h4>Web Application Developer</h4>
                                 <h5>January 2021 - August 2021</h5>
                                 <p><em>Codemeg Soft Solutions Pvt. Ltd, Indore (MP)</em></p>
@@ -82,7 +82,7 @@ const Resume = () => {
                                 </ul>
                             </div>
                             
-                            <div class="resume-item">
+                            <div className="resume-item">
                                 <h4>Web Application Developer</h4>
                                 <h5>October 2018 - April 2020</h5>
                                 <p><em>The Technomind IT Solutions, Varanasi (UP) </em></p>
