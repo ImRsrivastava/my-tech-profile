@@ -115,19 +115,49 @@ jobs:
                     ${{ env.AWS_ECR_REGISTRY }}/${{ env.AWS_ECR_REPOSITORY }}:${{ github.sha }}
 
     # DEPLOY DOCKER IMAGE TO ECS
-    Deploy-On-Develop:
-        needs: Build-And-Push-Image
+    # Deploy-On-Develop:
+    #     needs: Build-And-Push-Image
 
-        if: success() && github.ref_name == 'develop'
+    #     if: success() && github.ref_name == 'develop'
 
-        runs-on: ubuntu-latest
+    #     runs-on: ubuntu-latest
 
-        environment: develop
+    #     environment: develop
 
-        concurrency:
-            group: develop-deploy
-            cancel-in-progress: true
+    #     concurrency:
+    #         group: develop-deploy
+    #         cancel-in-progress: true
 
-        timeout-minutes: 20
+    #     timeout-minutes: 20
         
 
+    #     steps:
+    #       - name: Configure AWS Credentials
+    #         uses: aws-actions/configure-aws-credentials@v4
+    #         with:
+    #             aws-access-key-id: ${{ secret.AWS_ACCESS_KEY_ID }}
+    #             aws-secret-access-key: ${{ secret.AWS_SECRET_ACCESS_KEY }}
+    #             aws-region: ${{ env.AWS_REGION }}
+
+    #         # FETCH CURRECT ECS TASK DEFINITION
+    #       - name: Fetch Current Task Definition
+    #         run: |
+    #             aws ecs describe-task-definition --task-definition My-Tech-Profile-TD-dev --query taskDefinition > task-definition.json
+
+    #         # Replace Old Image with Latest Image
+    #       - name: Replace Old Image with Latest Image
+    #         id: task-def
+    #         uses: aws-actions/amazon-ecs-render-task-definition@v1
+    #         with: 
+    #             task-definition: task-definition.json
+    #             container-name: my-tech-profile
+    #             image: ${{ env.AWS_ECR_REGISTRY }}/${{ env.AWS_ECR_REPOSITORY }}:${{ needs.Build-And-Push-Image.outputs.image_tag }}
+
+    #         # Deploy Latest Task Definition to ECS
+    #       - name: Deploy Task Definition to ECS
+    #         uses: aws-actions/amazon-ecs-deploy-task-definition@v2
+    #         with:
+    #             task-definition: ${{ steps.task-def.outputs.task-definition }}
+    #             service: My-Tech-Profile-ECS-Service-Dev
+    #             cluster: My-Tech-Profile-ECS-Cluster-Dev
+    #             wait-for-service-stability: true
