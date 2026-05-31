@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { BsChevronDoubleRight } from "react-icons/bs";
 
 
@@ -23,18 +23,20 @@ const About = () => {
         },500);
     },[dateOfBirth]);
 
-    const calculateAge = () => {
+    const calculateAge = useCallback(() => {
         const today = new Date();
-        if(dateOfBirth !== null) {
-            const birthDate = new Date(dateOfBirth.split('-').reverse().join('-')); 
 
-            let age = today.getFullYear() - birthDate.getFullYear();
+        if (dateOfBirth) {
+            const birthDate = new Date(dateOfBirth);
+            let ageValue = today.getFullYear() - birthDate.getFullYear();
             const monthDiff = today.getMonth() - birthDate.getMonth();
-        
-            if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) { age--; }
-            setAge(age);
+
+            if ( monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate()) ) {
+                ageValue--;
+            }
+            setAge(ageValue);
         }
-    };
+    }, [dateOfBirth]);
 
 
     return (
