@@ -204,7 +204,7 @@ jobs:
 
             # Deploy Latest Task Definition to ECS
           - name: Deploy Latest Task Definition to ECS
-            uses: aws-actions/amazon-ecs-deploy-task-definition
+            uses: aws-actions/amazon-ecs-deploy-task-definition@v2
             with:
                 task-definition: ${{ steps.task-def.outputs.task-definition }}
                 cluster: My-Tech-Profile-ECS-Cluster-Dev
