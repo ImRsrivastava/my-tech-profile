@@ -83,7 +83,7 @@ jobs:
         timeout-minutes: 20
 
         outputs:
-            image_tag: ${{ github.sha }}
+            image_tag: ${{ steps.image.outputs.image_tag }}
 
         steps:
             # CHECKOUT TO SOURCE
@@ -119,6 +119,11 @@ jobs:
             run: |
                 docker push \
                     ${{ env.AWS_ECR_REGISTRY }}/${{ env.AWS_ECR_REPOSITORY }}:${{ github.sha }}
+
+          - name: Set Image Tag
+            id: image
+            run: |
+                echo "image_tag=${{ github.sha }}" >> $GITHUB_OUTPUT
 
     # DEPLOY DOCKER IMAGE TO ECS
     Deploy-On-Develop:
@@ -204,7 +209,7 @@ jobs:
             with:
                 task-definition: task-definition.json
                 container-name: my-tech-profile
-                image: ${{ env.AWS_ECR_REGISTRY }}/${{ env.AWS_ECR_REPOSITORY }}:${{ github.event.pull_request.merge_commit_sha }}
+                image: ${{ env.AWS_ECR_REGISTRY }}/${{ env.AWS_ECR_REPOSITORY }}:${{ github.event.pull_request.head.sha }}
 
             # Deploy Latest Task Definition to ECS
           - name: Deploy Latest Task Definition to ECS
