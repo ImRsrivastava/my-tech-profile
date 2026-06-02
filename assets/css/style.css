@@ -1507,5 +1507,7 @@ section,
     margin-bottom: 0 !important;
 }
 
-
+.small, small {
+    font-size: .475em !important;
+}
 
