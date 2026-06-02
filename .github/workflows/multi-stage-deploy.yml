@@ -1,0 +1,216 @@
+# WORKFLOW NAME
+name: Multiple Jobs Deployment Based on the Conditions
+
+# EVENTS
+on:
+    push: 
+        branches: 
+            - develop
+
+    # When a PR targeting staging branch gets closed
+    # This will ensure it only runs when the PR was actually merged, not simply closed.
+    pull_request:
+        types:
+            - closed
+        branches:
+            - staging
+
+# GLOBAL VARIABLES
+env:
+    AWS_REGION: us-east-1
+    AWS_ECR_REPOSITORY: my-tech-profile
+    AWS_ECR_REGISTRY: 128833122451.dkr.ecr.us-east-1.amazonaws.com
+
+# JOBS SECTION
+jobs:
+
+    # LINT JOB 
+    # In GitHub Actions, 
+    # Linting is used to automatically analyze your source code to catch programmatic errors, syntax bugs, and stylistic violations before they are merged. 
+    # It serves as a quality gate in your CI/CD Pipeline, ensuring that all contributed code follows a consistent style and meets established best practices.
+    # It is a mandatory to use in GitHub Actions CI/CD Pipeline
+    # Lint
+    Validate-Application:
+
+        # RUN THIS JOB ONLY WHEN DEVELOP BRANCH PUSHED
+        if: github.ref_name == 'develop'
+
+        # OS RUNNER
+        runs-on: ubuntu-latest
+
+        timeout-minutes: 10
+
+        strategy:
+            matrix: 
+                node-version: [18.x]
+
+        steps:
+            # CHECKOUT TO SOURCE CODE
+          - name: Checkout Source
+            uses: actions/checkout@v4
+
+            # SETUP NODEJS FOR REACT JS PROJECT
+          - name: Setup NodeJs
+            uses: actions/setup-node@v4
+            with:
+                node-version: ${{ matrix.node-version }}
+
+          - name: Install Dependencies
+            run: |
+                npm install
+
+          - name: Run ESlint
+            run: |
+                npm run lint
+
+    # BUILD DOCKER IMAGE
+    Build-And-Push-Image:
+        # RUN ONLY AFTER LINT SUCCESS
+        needs: Validate-Application
+
+        if: success() && github.ref_name == 'develop'
+
+        runs-on: ubuntu-latest
+
+        environment: develop
+
+        # PREVENT MULTIPLE DOCKER IMAGE PUSH SIMULTANEOUSLY
+        concurrency:
+            group: develop-build
+            cancel-in-progress: true
+
+        # TIMEOUT PROTECTION
+        timeout-minutes: 20
+
+        outputs:
+            image_tag: ${{ github.sha }}
+
+        steps:
+            # CHECKOUT TO SOURCE
+          - name: Checkout Source
+            uses: actions/checkout@v4
+
+            # CONFIGURE AWS CREDENTIAL
+          - name: Configure AWS Credentials
+            uses: aws-actions/configure-aws-credentials@v4
+            with:
+                aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+                aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+                aws-region: ${{ env.AWS_REGION }}
+
+            # LOGIN TO AWS ECR
+          - name: Login to AWS ECR
+            uses: aws-actions/amazon-ecr-login@v2
+
+            # BUILD DOCKER IMAGE
+          - name: Build Docker Image
+            run: |
+                docker build -t ${{ env.AWS_ECR_REPOSITORY }}:${{ github.sha }} .
+
+            # TAG DOCKER IMAGE
+          - name: Tag Docker Image
+            run: |
+                docker tag \
+                    ${{ env.AWS_ECR_REPOSITORY }}:${{ github.sha }} \
+                        ${{ env.AWS_ECR_REGISTRY }}/${{ env.AWS_ECR_REPOSITORY }}:${{ github.sha }}
+
+            # PUSH DOCKER IMAGE TO AWS ECR
+          - name: Push Docker Image to AWS ECR
+            run: |
+                docker push \
+                    ${{ env.AWS_ECR_REGISTRY }}/${{ env.AWS_ECR_REPOSITORY }}:${{ github.sha }}
+
+    # DEPLOY DOCKER IMAGE TO ECS
+    Deploy-On-Develop:
+        needs: Build-And-Push-Image
+
+        if: success() && github.ref_name == 'develop'
+
+        runs-on: ubuntu-latest
+
+        environment: develop
+
+        concurrency:
+            group: develop-deploy
+            cancel-in-progress: true
+
+        timeout-minutes: 20
+        
+
+        steps:
+          - name: Configure AWS Credentials
+            uses: aws-actions/configure-aws-credentials@v4
+            with:
+                aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+                aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+                aws-region: ${{ env.AWS_REGION }}
+
+            # FETCH CURRECT ECS TASK DEFINITION
+          - name: Fetch Current Task Definition
+            run: |
+                aws ecs describe-task-definition --task-definition My-Tech-Profile-TD-dev --query taskDefinition > task-definition.json
+
+            # Replace Old Image with Latest Image
+          - name: Replace Old Image with Latest Image
+            id: task-def
+            uses: aws-actions/amazon-ecs-render-task-definition@v1
+            with: 
+                task-definition: task-definition.json
+                container-name: my-tech-profile
+                image: ${{ env.AWS_ECR_REGISTRY }}/${{ env.AWS_ECR_REPOSITORY }}:${{ needs.Build-And-Push-Image.outputs.image_tag }}
+
+            # Deploy Latest Task Definition to ECS
+          - name: Deploy Task Definition to ECS
+            uses: aws-actions/amazon-ecs-deploy-task-definition@v2
+            with:
+                task-definition: ${{ steps.task-def.outputs.task-definition }}
+                service: My-Tech-Profile-ECS-Service-Dev
+                cluster: My-Tech-Profile-ECS-Cluster-Dev
+                wait-for-service-stability: true
+
+
+    # Staging Deployment
+    Deploy-Staging:
+        if: github.event.pull_request.merged == true && github.base_ref == 'staging'
+
+        runs-on: ubuntu-latest
+
+        environment: staging
+
+        concurrency:
+            group: staging-deploy
+            cancel-in-progress: true
+
+        timeout-minutes: 20
+
+        steps:
+            # Configure AWS Credentials
+          - name: Configure AWS Credentials
+            uses: aws-actions/configure-aws-credentials@v4
+            with:
+                aws-access-key-id: ${{ secrets.STAGE_AWS_ACCESS_KEY_ID }}
+                aws-secret-access-key: ${{ secrets.STAGE_AWS_SECRET_ACCESS_KEY }}
+                aws-region: ${{ env.AWS_REGION }}
+
+            # Fetch Current Task Definition
+          - name: Fetch Current Task Definition
+            run: |
+                aws ecs describe-task-definition --task-definition My-Tech-Profile-TD-Stage --query taskDefinition > task-definition.json
+
+            # Replace Old Image with Latest Image
+          - name: Replace Old Image with Latest Image
+            id: task-def
+            uses: aws-actions/amazon-ecs-render-task-definition@v1
+            with:
+                task-definition: task-definition.json
+                container-name: my-tech-profile
+                image: ${{ env.AWS_ECR_REGISTRY }}/${{ env.AWS_ECR_REPOSITORY }}:${{ github.event.pull_request.merge_commit_sha }}
+
+            # Deploy Latest Task Definition to ECS
+          - name: Deploy Latest Task Definition to ECS
+            uses: aws-actions/amazon-ecs-deploy-task-definition@v2
+            with:
+                task-definition: ${{ steps.task-def.outputs.task-definition }}
+                cluster: My-Tech-Profile-ECS-Cluster-Dev
+                service: My-Tech-Profile-ECS-Service-Stage
+                wait-for-service-stability: true
