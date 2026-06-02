@@ -7,7 +7,11 @@ on:
         branches: 
             - develop
 
+    # When a PR targeting staging branch gets closed
+    # This will ensure it only runs when the PR was actually merged, not simply closed.
     pull_request:
+        types:
+            - closed
         branches:
             - staging
 
@@ -191,7 +195,7 @@ jobs:
             # Fetch Current Task Definition
           - name: Fetch Current Task Definition
             run: |
-                aws ecs decribe-task-definition --task-definition My-Tech-Profile-TD-Stage --query TaskDefinition > task-definition.json
+                aws ecs describe-task-definition --task-definition My-Tech-Profile-TD-Stage --query taskDefinition > task-definition.json
 
             # Replace Old Image with Latest Image
           - name: Replace Old Image with Latest Image
