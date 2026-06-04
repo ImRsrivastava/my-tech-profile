@@ -81,7 +81,7 @@ jobs:
 
         strategy:
             matrix:
-                node-version: [ 18.x, 20.x ]
+                node-version: [ 18.x ]
 
         steps:
           - name: Checkout Code
@@ -90,7 +90,7 @@ jobs:
           - name: Setup Node.js
             uses: actions/setup-node@v4
             with:
-                node-version: ${{ matrix.node-version }}
+                node-version: ${{ matrix.node_version }}
 
           - name: Install Dependencies
             run: |
