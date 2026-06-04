@@ -200,7 +200,7 @@ jobs:
             with: 
                 task-definition: task-definition.json
                 container-name: my-tech-profile
-                image: ${{ env.AWS_ECR_REGISTRY }}/${{ env.AWS_ECR_REPOSITORY }}:${{ needs.Build-And-Push-Image.outputs.image_tag }}
+                image: ${{ env.AWS_ECR_REGISTRY }}/${{ env.AWS_ECR_REPOSITORY }}:${{ needs.Build-And-Push-Image-Case.outputs.image_tag }}
 
             # Deploy Latest Task Definition to ECS
           - name: Deploy Task Definition to ECS
