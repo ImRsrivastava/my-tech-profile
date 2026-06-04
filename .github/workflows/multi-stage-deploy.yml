@@ -165,7 +165,7 @@ jobs:
 
     # DEPLOY DOCKER IMAGE TO ECS
     Develop-Deploy-Case:
-        needs: Build-And-Push-Image
+        needs: Build-And-Push-Image-Case
 
         if: success() && github.ref_name == 'develop'
 
