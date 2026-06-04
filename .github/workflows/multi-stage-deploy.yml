@@ -30,7 +30,7 @@ jobs:
     # It serves as a quality gate in your CI/CD Pipeline, ensuring that all contributed code follows a consistent style and meets established best practices.
     # It is a mandatory to use in GitHub Actions CI/CD Pipeline
     # Lint
-    Validate-Application:
+    Validate-Case:
 
         # RUN THIS JOB ONLY WHEN DEVELOP BRANCH PUSHED
         if: github.ref_name == 'develop'
@@ -63,10 +63,48 @@ jobs:
             run: |
                 npm run lint
 
+    # Test Application
+    Test-Case:
+        needs: Validate-Case
+
+        if: success() && github.ref_name == 'develop'
+
+        runs-on: ubuntu-latest
+
+        environment: develop
+
+        concurrency:
+            group: develop-test
+            cancel-in-progress: true
+
+        timeout-minutes: 10
+
+        strategy:
+            matrix:
+                node-version: [ 18.x ]
+
+        steps:
+          - name: Checkout Code
+            uses: actions/checkout@v4
+
+          - name: Setup Node.js
+            uses: actions/setup-node@v4
+            with:
+                node-version: ${{ matrix.node_version }}
+
+          - name: Install Dependencies
+            run: |
+                npm install
+
+          - name: Test Application via Test Cases
+            run: |
+                npm run test
+
+
     # BUILD DOCKER IMAGE
-    Build-And-Push-Image:
+    Build-And-Push-Image-Case:
         # RUN ONLY AFTER LINT SUCCESS
-        needs: Validate-Application
+        needs: Test-Case
 
         if: success() && github.ref_name == 'develop'
 
@@ -126,7 +164,7 @@ jobs:
                 echo "image_tag=${{ github.sha }}" >> $GITHUB_OUTPUT
 
     # DEPLOY DOCKER IMAGE TO ECS
-    Deploy-On-Develop:
+    Develop-Deploy-Case:
         needs: Build-And-Push-Image
 
         if: success() && github.ref_name == 'develop'
@@ -175,7 +213,7 @@ jobs:
 
 
     # Staging Deployment
-    Deploy-Staging:
+    Staging-Deploy-Case:
         if: github.event.pull_request.merged == true && github.base_ref == 'staging'
 
         runs-on: ubuntu-latest
