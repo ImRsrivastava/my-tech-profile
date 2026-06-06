@@ -93,7 +93,6 @@ const About = () => {
                                 </div>
                             </div>
                             <p className="pt-3 mb-3">Along with backend development, I bring solid experience in <b>cloud infrastructure and DevOps practices</b>. I have practical experience working with <b>AWS cloud services</b>, including EC2, S3, IAM, VPC, ECS, and ECR, to deploy and manage scalable cloud-native applications.</p>
-
                             <p className=" mb-3">I also work extensively with <b>containerization and infrastructure automation</b>, using tools such as <b>Docker</b> and <b>Terraform</b> to ensure consistent, reproducible deployments. Additionally, I have experience implementing <b>CI/CD pipelines</b>, enabling automated testing, building, and deployment workflows that improve development efficiency and reliability.</p>
                         </div>
                     </div>
@@ -143,7 +142,6 @@ const About = () => {
                                     </li>
                                 </ul>
                             </div>
-
                             <p className=" mb-3">I am passionate about solving complex backend problems, improving application performance, and building systems that are reliable, scalable, and maintainable. I enjoy working on projects that involve <b>modern backend architecture, cloud infrastructure, and scalable system design</b>.</p>
                         </div>
                     </div>

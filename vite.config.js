@@ -9,8 +9,13 @@ export default ({ mode }) => {
   return defineConfig({
     plugins: [react()],
     server: {
-      port: Number(env.VITE_APP_PORT),
+      port: Number(env.VITE_APP_PORT || 3000),
       host: '0.0.0.0'
+    },
+    test: {
+      environment: 'jsdom',
+      globals: true,
+      setupFiles: './src/setupTests.js'
     }
   })
 }
