@@ -30,7 +30,7 @@ const Index = () => {
                         <div className="offset-3 col-lg-8">
                             <h2><i> Rishabh Srivastava <small>( ImRsrivastava )</small></i></h2>
                             <p>I&apos;m a &nbsp;
-                                <span ref={el} className="typed" data-typed-items="AWS Cloud and DevOps Engineer, AWS Infra Engineer, Senior Backend Engineer, Cloud and Infrastructure Engineer"></span>
+                                <span ref={el} className="typed" data-typed-items="AWS Cloud and DevOps Engineer, AWS Infrastruvture Engineer, Senior Backend Engineer, Cloud and Infrastructure Engineer, Python (FastAPI) Developer"></span>
                                 <span className="typed-cursor typed-cursor--blink" aria-hidden="true"></span>
                             </p>
                             <div className="social-links">

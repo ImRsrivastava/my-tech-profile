@@ -10,7 +10,12 @@ export default ({ mode }) => {
     plugins: [react()],
     server: {
       port: Number(env.VITE_APP_PORT || 3000),
-      host: '0.0.0.0'
+      host: '0.0.0.0',
+
+      allowedHosts: [
+        'tech-profile-alb-1629877846.us-east-1.elb.amazonaws.com',
+        'tech-profile-alb-stage-1218853169.us-east-1.elb.amazonaws.com'
+      ]
     },
     test: {
       environment: 'jsdom',
