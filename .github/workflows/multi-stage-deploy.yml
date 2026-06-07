@@ -164,7 +164,6 @@ jobs:
                 image-tag: ${{ github.sha }}
 
 
-
     # DEPLOY DOCKER IMAGE TO ECS
     Develop-Deploy-Case:
         needs: Build-And-Push-Image-Case
@@ -183,12 +182,20 @@ jobs:
           ##################################################
           # Manage AWS Configuration & Login
           ##################################################
+          - name: Checkout Source
+            uses: actions/checkout@v4
+
+
+          ##################################################
+          # Manage AWS Configuration & Login
+          ##################################################
           - name: Configure AWS Credentials
             uses: ./.github/actions/aws-login
             with:
                 aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
                 aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
                 aws-region: ${{ env.AWS_REGION }}
+
 
           ##################################################
           # Manage Task-Definition Section
@@ -220,7 +227,13 @@ jobs:
         timeout-minutes: 20
 
         steps:
-          
+          ##################################################
+          # Manage AWS Configuration & Login
+          ##################################################
+          - name: Checkout Source
+            uses: actions/checkout@v4
+
+
           ##################################################
           # Manage AWS Configuration & Login
           ##################################################
@@ -230,6 +243,7 @@ jobs:
                 aws-access-key-id: ${{ secrets.STAGE_AWS_ACCESS_KEY_ID }}
                 aws-secret-access-key: ${{ secrets.STAGE_AWS_SECRET_ACCESS_KEY }}
                 aws-region: ${{ env.AWS_REGION }}
+
 
           ##################################################
           # Manage Task-Definition Section
