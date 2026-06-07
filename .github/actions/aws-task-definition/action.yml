@@ -5,9 +5,6 @@ inputs:
     task-definition-name:
         required: true
 
-    task-definition:
-        required: true
-
     container-name:
         required: true
 
@@ -17,7 +14,8 @@ inputs:
     service:
         required: true
 
-    cluster: required: true
+    cluster: 
+        required: true
 
 
 runs:
@@ -52,7 +50,7 @@ runs:
       - name: Deploy Task Definition to ECS
         uses: aws-actions/amazon-ecs-deploy-task-definition@v2
         with:
-            task-definition: ${{ inputs.task-definition }}
+            task-definition: ${{ steps.task-def.outputs.task-definition }}
             service: ${{ inputs.service }}
             cluster: ${{ inputs.cluster }}
             wait-for-service-stability: true
