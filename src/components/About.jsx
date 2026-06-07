@@ -57,7 +57,7 @@ const About = () => {
                             <img src="./assets/images/user-profile.png" className="img-fluid" alt="user-profile.png" />
                         </div>
                         <div className="col-lg-8 content">
-                            <h2>Senior Backend Engineer</h2>
+                            <h2>Senior Backend & AWS Cloud Engineer</h2>
                             <div className="row py-3">
                                 <div className="col-lg-6">
                                     <ul>
