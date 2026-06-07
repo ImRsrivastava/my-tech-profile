@@ -132,7 +132,7 @@ jobs:
         timeout-minutes: 20
 
         outputs:
-            image_tag: ${{ steps.image.outputs.image_tag }}
+            image_tag: ${{ steps.docker.outputs.image-tag }}
 
         steps:
           ##################################################
@@ -157,6 +157,7 @@ jobs:
           # Manage Docker Build, Tag and Push
           ##################################################
           - name: Manage Docker Build, Tag and Push
+            id: docker
             uses: ./.github/actions/docker-build-push
             with:
                 repository: ${{ env.AWS_ECR_REPOSITORY }}
