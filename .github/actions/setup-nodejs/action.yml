@@ -1,0 +1,21 @@
+name: Setup Node.Js
+description: Setup Node.js, Install dependencies, Execute Code Validations and Run Test Cases
+
+inputs:
+    node-version:
+        required: true
+
+runs:
+    using: composite
+
+    steps:
+
+      - name: Setup Node js
+        uses: actions/setup-node@v4
+        with:
+            node-version: ${{ inputs.node-version }}
+
+      - name: Install Dependencies
+        run: |
+            npm install
+        shell: bash

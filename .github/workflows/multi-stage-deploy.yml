@@ -45,23 +45,29 @@ jobs:
                 node-version: [18.x]
 
         steps:
-            # CHECKOUT TO SOURCE CODE
+          ##################################################
+          # Checkout Source
+          ##################################################
           - name: Checkout Source
             uses: actions/checkout@v4
 
-            # SETUP NODEJS FOR REACT JS PROJECT
+
+          ##################################################
+          # Setup Nodejs For React JS Project
+          ##################################################
           - name: Setup NodeJs
-            uses: actions/setup-node@v4
+            uses: ./.github/actions/setup-nodejs
             with:
                 node-version: ${{ matrix.node-version }}
 
-          - name: Install Dependencies
-            run: |
-                npm install
 
+          ##################################################
+          # Run ES Lint to Check Code Quality
+          ##################################################
           - name: Run ESlint
             run: |
                 npm run lint
+
 
     # Test Application
     Test-Case:
@@ -84,18 +90,25 @@ jobs:
                 node-version: [ 18.x ]
 
         steps:
+          ##################################################
+          # Checkout Source
+          ##################################################
           - name: Checkout Code
             uses: actions/checkout@v4
 
+
+          ##################################################
+          # Setup Nodejs For React JS Project
+          ##################################################
           - name: Setup Node.js
-            uses: actions/setup-node@v4
+            uses: ./.github/actions/setup-nodejs
             with:
-                node-version: ${{ matrix.node_version }}
+                node-version: ${{ matrix.node-version }}
 
-          - name: Install Dependencies
-            run: |
-                npm install
 
+          ##################################################
+          # Test Application Using Test Cases
+          ##################################################
           - name: Test Application via Test Cases
             run: |
                 npm run test
@@ -105,11 +118,9 @@ jobs:
     Build-And-Push-Image-Case:
         # RUN ONLY AFTER LINT SUCCESS
         needs: Test-Case
-
         if: success() && github.ref_name == 'develop'
 
         runs-on: ubuntu-latest
-
         environment: develop
 
         # PREVENT MULTIPLE DOCKER IMAGE PUSH SIMULTANEOUSLY
@@ -124,53 +135,50 @@ jobs:
             image_tag: ${{ steps.image.outputs.image_tag }}
 
         steps:
-            # CHECKOUT TO SOURCE
+          ##################################################
+          # Checkout Source
+          ##################################################
           - name: Checkout Source
             uses: actions/checkout@v4
 
-            # CONFIGURE AWS CREDENTIAL
-          - name: Configure AWS Credentials
-            uses: aws-actions/configure-aws-credentials@v4
+
+          ##################################################
+          # Manage AWS Configuration & Login
+          ##################################################
+          - name: Manage AWS Configuration & Login
+            uses: ./.github/actions/aws-login
             with:
                 aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
                 aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
                 aws-region: ${{ env.AWS_REGION }}
 
-            # LOGIN TO AWS ECR
-          - name: Login to AWS ECR
-            uses: aws-actions/amazon-ecr-login@v2
 
-            # BUILD DOCKER IMAGE
-          - name: Build Docker Image
-            run: |
-                docker build -t ${{ env.AWS_ECR_REPOSITORY }}:${{ github.sha }} .
+          ##################################################
+          # Manage Docker Build, Tag and Push
+          ##################################################
+          - name: Manage Docker Build, Tag and Push
+            uses: ./.github/actions/docker-build-push
+            with:
+                repository: ${{ env.AWS_ECR_REPOSITORY }}
+                registry: ${{ env.AWS_ECR_REGISTRY }}
+                image-tag: ${{ steps.image.outputs.image_tag }}
 
-            # TAG DOCKER IMAGE
-          - name: Tag Docker Image
-            run: |
-                docker tag \
-                    ${{ env.AWS_ECR_REPOSITORY }}:${{ github.sha }} \
-                        ${{ env.AWS_ECR_REGISTRY }}/${{ env.AWS_ECR_REPOSITORY }}:${{ github.sha }}
 
-            # PUSH DOCKER IMAGE TO AWS ECR
-          - name: Push Docker Image to AWS ECR
-            run: |
-                docker push \
-                    ${{ env.AWS_ECR_REGISTRY }}/${{ env.AWS_ECR_REPOSITORY }}:${{ github.sha }}
-
+          ##################################################
+          # Set Image Tag
+          ##################################################
           - name: Set Image Tag
             id: image
             run: |
                 echo "image_tag=${{ github.sha }}" >> $GITHUB_OUTPUT
 
+
     # DEPLOY DOCKER IMAGE TO ECS
     Develop-Deploy-Case:
         needs: Build-And-Push-Image-Case
-
         if: success() && github.ref_name == 'develop'
 
         runs-on: ubuntu-latest
-
         environment: develop
 
         concurrency:
@@ -178,38 +186,31 @@ jobs:
             cancel-in-progress: true
 
         timeout-minutes: 20
-        
 
         steps:
+          ##################################################
+          # Manage AWS Configuration & Login
+          ##################################################
           - name: Configure AWS Credentials
-            uses: aws-actions/configure-aws-credentials@v4
+            uses: ./.github/actions/aws-login
             with:
                 aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
                 aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
                 aws-region: ${{ env.AWS_REGION }}
 
-            # FETCH CURRECT ECS TASK DEFINITION
-          - name: Fetch Current Task Definition
-            run: |
-                aws ecs describe-task-definition --task-definition My-Tech-Profile-TD-dev --query taskDefinition > task-definition.json
-
-            # Replace Old Image with Latest Image
-          - name: Replace Old Image with Latest Image
-            id: task-def
-            uses: aws-actions/amazon-ecs-render-task-definition@v1
-            with: 
-                task-definition: task-definition.json
+          ##################################################
+          # Manage Task-Definition Section
+          ##################################################
+          - name: Manage Task-Definition Section
+            uses: ./.github/actions/aws-task-definition
+            with:
+                task-definition-name: My-Tech-Profile-TD-dev
+                task-definition: ${{ steps.task-def.outputs.task-definition }}
                 container-name: my-tech-profile
                 image: ${{ env.AWS_ECR_REGISTRY }}/${{ env.AWS_ECR_REPOSITORY }}:${{ needs.Build-And-Push-Image-Case.outputs.image_tag }}
-
-            # Deploy Latest Task Definition to ECS
-          - name: Deploy Task Definition to ECS
-            uses: aws-actions/amazon-ecs-deploy-task-definition@v2
-            with:
-                task-definition: ${{ steps.task-def.outputs.task-definition }}
                 service: My-Tech-Profile-ECS-Service-Dev
                 cluster: My-Tech-Profile-ECS-Cluster-Dev
-                wait-for-service-stability: true
+
 
 
     # Staging Deployment
@@ -227,33 +228,27 @@ jobs:
         timeout-minutes: 20
 
         steps:
-            # Configure AWS Credentials
+          
+          ##################################################
+          # Manage AWS Configuration & Login
+          ##################################################
           - name: Configure AWS Credentials
-            uses: aws-actions/configure-aws-credentials@v4
+            uses: ./.github/actions/aws-login
             with:
                 aws-access-key-id: ${{ secrets.STAGE_AWS_ACCESS_KEY_ID }}
                 aws-secret-access-key: ${{ secrets.STAGE_AWS_SECRET_ACCESS_KEY }}
                 aws-region: ${{ env.AWS_REGION }}
 
-            # Fetch Current Task Definition
-          - name: Fetch Current Task Definition
-            run: |
-                aws ecs describe-task-definition --task-definition My-Tech-Profile-TD-Stage --query taskDefinition > task-definition.json
-
-            # Replace Old Image with Latest Image
-          - name: Replace Old Image with Latest Image
-            id: task-def
-            uses: aws-actions/amazon-ecs-render-task-definition@v1
+          ##################################################
+          # Manage Task-Definition Section
+          ##################################################
+          - name: Manage Task-Definition Section
+            uses: ./.github/actions/aws-task-definition
             with:
-                task-definition: task-definition.json
+                task-definition-name: My-Tech-Profile-TD-Stage
+                task-definition: ${{ steps.task-def.outputs.task-definition }}
                 container-name: my-tech-profile
                 image: ${{ env.AWS_ECR_REGISTRY }}/${{ env.AWS_ECR_REPOSITORY }}:${{ github.event.pull_request.head.sha }}
-
-            # Deploy Latest Task Definition to ECS
-          - name: Deploy Latest Task Definition to ECS
-            uses: aws-actions/amazon-ecs-deploy-task-definition@v2
-            with:
-                task-definition: ${{ steps.task-def.outputs.task-definition }}
-                cluster: My-Tech-Profile-ECS-Cluster-Dev
                 service: My-Tech-Profile-ECS-Service-Stage
-                wait-for-service-stability: true
+                cluster: My-Tech-Profile-ECS-Cluster-Dev
+

@@ -1,0 +1,58 @@
+name: AWS Task Definition
+description: Fetch Current ECS Task Definition, Replace Old Image with New Image and Deploy it to ECS
+
+inputs:
+    task-definition-name:
+        required: true
+
+    task-definition:
+        required: true
+
+    container-name:
+        required: true
+
+    image:
+        required: true
+
+    service:
+        required: true
+
+    cluster: required: true
+
+
+runs:
+    using: composite
+
+    steps:
+
+      ##################################################
+      # Fetch Current Task Definition
+      ##################################################
+      - name: Fetch Current Task Definition
+        shell: bash
+        run: |
+            aws ecs describe-task-definition --task-definition ${{ inputs.task-definition-name }} --query taskDefinition > task-definition.json
+
+
+      ##################################################
+      # Replace Old Image with Latest Image
+      ##################################################
+      - name: Replace Old Image with Latest Image
+        id: task-def
+        uses: aws-actions/amazon-ecs-render-task-definition@v1
+        with: 
+            task-definition: task-definition.json
+            container-name: ${{ inputs.container-name }}
+            image: ${{ inputs.image }}
+
+
+      ##################################################
+      # Deploy Task Definition to ECS
+      ##################################################
+      - name: Deploy Task Definition to ECS
+        uses: aws-actions/amazon-ecs-deploy-task-definition@v2
+        with:
+            task-definition: ${{ inputs.task-definition }}
+            service: ${{ inputs.service }}
+            cluster: ${{ inputs.cluster }}
+            wait-for-service-stability: true
