@@ -48,7 +48,7 @@ const About = () => {
                     
                     <p className="mb-3">Experienced in building reusable Terraform modules, configuring CI/CD pipelines using GitHub Actions, and managing secure AWS networking using VPC, IAM, Security Groups, and EC2. Strong understanding of Linux administration, cloud automation, monitoring, and scalable backend deployments using FastAPI and PostgreSQL.</p>
                     
-                    <p className="mb-3">Additionally experienced in backend application development using FastAPI, Laravel, and Node.js with focus on REST APIs, authentication systems, and cloud-native application architecture.</p>
+                    <p className="mb-3">Additionally experienced in backend application development using FastAPI and Laravel with focus on REST APIs, authentication systems, and cloud-native application architecture.</p>
                 </div>
 
                 <div className="container">
@@ -57,7 +57,7 @@ const About = () => {
                             <img src="./assets/images/user-profile.png" className="img-fluid" alt="user-profile.png" />
                         </div>
                         <div className="col-lg-8 content">
-                            <h2>Senior Backend Engineer</h2>
+                            <h2>Senior Backend &amp; AWS DevOps Engineer</h2>
                             <div className="row py-3">
                                 <div className="col-lg-6">
                                     <ul>
