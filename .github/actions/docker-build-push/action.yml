@@ -26,15 +26,16 @@ runs:
     # Build Docker Image
     ##################################################
       - name: Build Docker Image
+        shell: bash
         run: |
             docker build -t ${{ inputs.repository }}:${{ inputs.image-tag }} .
-        shell: bash
 
 
     ##################################################
     # Tag Docker Image
     ##################################################
       - name: Tag Docker Image
+        shell: bash
         run: |
             docker tag ${{ inputs.repository }}:${{ inputs.image-tag }} ${{ inputs.registry }}/${{ inputs.repository }}:${{ inputs.image-tag }}
 
