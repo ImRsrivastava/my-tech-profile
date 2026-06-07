@@ -161,16 +161,8 @@ jobs:
             with:
                 repository: ${{ env.AWS_ECR_REPOSITORY }}
                 registry: ${{ env.AWS_ECR_REGISTRY }}
-                image-tag: ${{ steps.image.outputs.image_tag }}
+                image-tag: ${{ github.sha }}
 
-
-          ##################################################
-          # Set Image Tag
-          ##################################################
-          - name: Set Image Tag
-            id: image
-            run: |
-                echo "image_tag=${{ github.sha }}" >> $GITHUB_OUTPUT
 
 
     # DEPLOY DOCKER IMAGE TO ECS
