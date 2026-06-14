@@ -155,45 +155,45 @@ jobs:
 
 
     # BUILD DOCKER IMAGE
-    # Secutiry-Scan:
-    #     # RUN ONLY AFTER LINT SUCCESS
-    #     needs: Build-Image
-    #     if: success() && github.ref_name == 'develop'
+    Secutiry-Scan:
+        # RUN ONLY AFTER LINT SUCCESS
+        needs: Build-Image
+        if: success() && github.ref_name == 'develop'
 
-    #     runs-on: ubuntu-latest
-    #     environment: develop
+        runs-on: ubuntu-latest
+        environment: develop
 
-    #     # PREVENT MULTIPLE DOCKER IMAGE PUSH SIMULTANEOUSLY
-    #     concurrency:
-    #         group: develop-security-scan
-    #         cancel-in-progress: true
+        # PREVENT MULTIPLE DOCKER IMAGE PUSH SIMULTANEOUSLY
+        concurrency:
+            group: develop-security-scan
+            cancel-in-progress: true
 
-    #     # TIMEOUT PROTECTION
-    #     timeout-minutes: 10
+        # TIMEOUT PROTECTION
+        timeout-minutes: 10
 
-    #     steps:
-    #       ##################################################
-    #       # Checkout Source
-    #       ##################################################
-    #       - name: Checkout Source
-    #         uses: actions/checkout@v4
+        steps:
+          ##################################################
+          # Checkout Source
+          ##################################################
+          - name: Checkout Source
+            uses: actions/checkout@v4
 
 
-    #       ##################################################
-    #       # Manage Security Scan
-    #       ##################################################
-    #       - name: Manage Security Scan
-    #         uses: ./.github/actions/security-scan
-    #         with:
-    #             repository: ${{ env.AWS_ECR_REPOSITORY }}
-    #             registry: ${{ env.AWS_ECR_REGISTRY }}
-    #             image-tag: ${{ needs.Build-Image.outputs.image_tag }}
+          ##################################################
+          # Manage Security Scan
+          ##################################################
+          - name: Manage Security Scan
+            uses: ./.github/actions/security-scan
+            with:
+                repository: ${{ env.AWS_ECR_REPOSITORY }}
+                registry: ${{ env.AWS_ECR_REGISTRY }}
+                image-tag: ${{ needs.Build-Image.outputs.image_tag }}
 
 
     # BUILD DOCKER IMAGE
     Push-Image:
         # RUN ONLY AFTER LINT SUCCESS
-        needs: Build-Image
+        needs: Secutiry-Scan
         if: success() && github.ref_name == 'develop'
 
         runs-on: ubuntu-latest
