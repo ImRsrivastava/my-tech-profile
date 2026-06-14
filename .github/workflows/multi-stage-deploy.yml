@@ -222,7 +222,7 @@ jobs:
 
     # DEPLOY DOCKER IMAGE TO ECS
     Deploy:
-        needs: Build-And-Push-Image-Case
+        needs: Push-Image
         if: success() && github.ref_name == 'develop'
 
         runs-on: ubuntu-latest
