@@ -12,6 +12,6 @@ test('renders about section', () => {
   ).toBeInTheDocument()
 
   expect(
-    screen.getByText(/Senior Backend & AWS DevOps Engineer/i)
+    screen.getByText(/AWS Cloud & DevOps Engineer/i)
   ).toBeInTheDocument()
 })
