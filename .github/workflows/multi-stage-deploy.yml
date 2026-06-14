@@ -115,7 +115,7 @@ jobs:
 
 
     # BUILD DOCKER IMAGE
-    Build-And-Push-Image-Case:
+    Build-Image:
         # RUN ONLY AFTER LINT SUCCESS
         needs: Test-Case
         if: success() && github.ref_name == 'develop'
@@ -143,30 +143,85 @@ jobs:
 
 
           ##################################################
-          # Manage AWS Configuration & Login
-          ##################################################
-          - name: Manage AWS Configuration & Login
-            uses: ./.github/actions/aws-login
-            with:
-                aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-                aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-                aws-region: ${{ env.AWS_REGION }}
-
-
-          ##################################################
           # Manage Docker Build, Tag and Push
           ##################################################
           - name: Manage Docker Build, Tag and Push
             id: docker
-            uses: ./.github/actions/docker-build-push
+            uses: ./.github/actions/docker-build
             with:
                 repository: ${{ env.AWS_ECR_REPOSITORY }}
                 registry: ${{ env.AWS_ECR_REGISTRY }}
                 image-tag: ${{ github.sha }}
 
 
+    # BUILD DOCKER IMAGE
+    Secutiry-Scan:
+        # RUN ONLY AFTER LINT SUCCESS
+        needs: Build-Image
+        if: success() && github.ref_name == 'develop'
+
+        runs-on: ubuntu-latest
+        environment: develop
+
+        # PREVENT MULTIPLE DOCKER IMAGE PUSH SIMULTANEOUSLY
+        concurrency:
+            group: develop-security-scan
+            cancel-in-progress: true
+
+        # TIMEOUT PROTECTION
+        timeout-minutes: 10
+
+        steps:
+          ##################################################
+          # Checkout Source
+          ##################################################
+          # - name: Checkout Source
+          #   uses: actions/checkout@v4
+
+
+          ##################################################
+          # Manage Security Scan
+          ##################################################
+          - name: Manage Security Scan
+            uses: ./.github/actions/security-scan
+            with:
+                repository: ${{ env.AWS_ECR_REPOSITORY }}
+                registry: ${{ env.AWS_ECR_REGISTRY }}
+                image-tag: ${{ needs.Build-Image.outputs.image_tag }}
+
+
+    # BUILD DOCKER IMAGE
+    Push-Image:
+        # RUN ONLY AFTER LINT SUCCESS
+        needs: Secutiry-Scan
+        if: success() && github.ref_name == 'develop'
+
+        runs-on: ubuntu-latest
+        environment: develop
+
+        # PREVENT MULTIPLE DOCKER IMAGE PUSH SIMULTANEOUSLY
+        concurrency:
+            group: develop-push
+            cancel-in-progress: true
+
+        # TIMEOUT PROTECTION
+        timeout-minutes: 20
+
+        steps:
+          ##################################################
+          # Manage Docker Build, Tag and Push
+          ##################################################
+          - name: Manage Docker Image Push AWS ECR
+            uses: ./.github/actions/docker-build
+            with:
+                repository: ${{ env.AWS_ECR_REPOSITORY }}
+                registry: ${{ env.AWS_ECR_REGISTRY }}
+                image-tag: ${{ needs.Build-Image.outputs.image_tag }}
+
+
+
     # DEPLOY DOCKER IMAGE TO ECS
-    Develop-Deploy-Case:
+    Deploy:
         needs: Build-And-Push-Image-Case
         if: success() && github.ref_name == 'develop'
 
@@ -206,7 +261,7 @@ jobs:
             with:
                 task-definition-name: My-Tech-Profile-TD-dev
                 container-name: my-tech-profile
-                image: ${{ env.AWS_ECR_REGISTRY }}/${{ env.AWS_ECR_REPOSITORY }}:${{ needs.Build-And-Push-Image-Case.outputs.image_tag }}
+                image: ${{ env.AWS_ECR_REGISTRY }}/${{ env.AWS_ECR_REPOSITORY }}:${{ needs.Build-Case.outputs.image_tag }}
                 service: My-Tech-Profile-ECS-Service-Dev
                 cluster: My-Tech-Profile-ECS-Cluster-Dev
 

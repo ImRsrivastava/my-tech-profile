@@ -1,0 +1,26 @@
+name: Scan Docker Image
+description: Security scan of Docker Image
+
+inputs:
+    repository:
+        required: true
+
+    registry:
+        required: true
+
+    image-tag:
+        required: true
+
+runs:
+    using: composite
+
+    steps:
+
+      ##################################################
+      # Run Trivy Scan
+      ##################################################
+      - name: Run Trivy Scan
+        uses: aquasecurity/trivy-action@master
+        with:
+            image-ref: ${{ inputs.registry }}/${{ inputs.repository }}:${{ inputs.image-tag }}
+            format: table

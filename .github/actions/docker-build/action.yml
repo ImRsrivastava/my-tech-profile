@@ -1,5 +1,5 @@
-name: Docker Build And Push
-description: Build Docker Image, Tag it and Push to Amazon ( AWS ) ECR ( Elastic Container Registry )
+name: Build Docker Image & Tag
+description: Build Docker Image & Tag
 
 inputs:
     repository:
@@ -39,11 +39,3 @@ runs:
         run: |
             docker tag ${{ inputs.repository }}:${{ inputs.image-tag }} ${{ inputs.registry }}/${{ inputs.repository }}:${{ inputs.image-tag }}
 
-
-    ##################################################
-    # Push Docker Image
-    ##################################################
-      - name: Push Docker Image
-        shell: bash
-        run: |
-            docker push ${{ inputs.registry }}/${{ inputs.repository }}:${{ inputs.image-tag }}
