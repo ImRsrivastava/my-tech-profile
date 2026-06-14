@@ -193,7 +193,7 @@ jobs:
     # BUILD DOCKER IMAGE
     Push-Image:
         # RUN ONLY AFTER LINT SUCCESS
-        needs: Secutiry-Scan
+        needs: Build-Image
         if: success() && github.ref_name == 'develop'
 
         runs-on: ubuntu-latest
