@@ -31,15 +31,6 @@ runs:
             docker build -t ${{ inputs.repository }}:${{ inputs.image-tag }} .
 
 
-      ##################################################
-      # Tag Docker Image
-      ##################################################
-      - name: Tag Docker Image
-        shell: bash
-        run: |
-            docker tag ${{ inputs.repository }}:${{ inputs.image-tag }} ${{ inputs.registry }}/${{ inputs.repository }}:${{ inputs.image-tag }}
-
-
       # THE BELOW 2 STEPS ( Save Docker Image & Upload Docker Artifact ) WILL USE TO SAVE AND UPLOAD DOCKER IMAGE ARTIFACT INTO SEPARATE RUNNER
       # BECAUSE EACH AND EVERY STEPS IN GITHUB ACTIONS PIPELINE RUNS ON SEPARATE RUNNER.
 

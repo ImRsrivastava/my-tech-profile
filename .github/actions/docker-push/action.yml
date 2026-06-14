@@ -33,6 +33,13 @@ runs:
         run: |
             docker load -i image.tar
 
+      - name: Tag Docker Image For ECR
+        shell: bash
+        run: |
+            docker tag \
+                ${{ inputs.repository }}:${{ inputs.image-tag }} \
+                ${{ inputs.registry }}/${{ inputs.repository }}:${{ inputs.image-tag }}
+
 
       ##################################################
       # Push Docker Image
