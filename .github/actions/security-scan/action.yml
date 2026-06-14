@@ -40,5 +40,5 @@ runs:
       - name: Run Trivy Scan
         uses: aquasecurity/trivy-action@master
         with:
-            image-ref: ${{ inputs.registry }}/${{ inputs.repository }}:${{ inputs.image-tag }}
+            image-ref: ${{ inputs.repository }}:${{ inputs.image-tag }}
             format: table
