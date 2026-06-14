@@ -17,6 +17,24 @@ runs:
     steps:
 
       ##################################################
+      # Download Docker Artifact
+      ##################################################
+      - name: Download Docker Artifact
+        uses: actions/download-artifact@v4
+        with: 
+            name: docker-image
+
+
+      ##################################################
+      # Load Docker Image
+      ##################################################
+      - name: Load Docker Image
+        shell: bash
+        run: |
+            docker load -i image.tar
+
+
+      ##################################################
       # Run Trivy Scan
       ##################################################
       - name: Run Trivy Scan
