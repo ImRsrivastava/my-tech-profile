@@ -218,7 +218,7 @@ jobs:
           # Manage Docker Build, Tag and Push
           ##################################################
           - name: Manage Docker Image Push AWS ECR
-            uses: ./.github/actions/docker-build
+            uses: ./.github/actions/docker-push
             with:
                 repository: ${{ env.AWS_ECR_REPOSITORY }}
                 registry: ${{ env.AWS_ECR_REGISTRY }}
