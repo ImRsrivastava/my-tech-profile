@@ -187,7 +187,7 @@ jobs:
             with:
                 repository: ${{ env.AWS_ECR_REPOSITORY }}
                 registry: ${{ env.AWS_ECR_REGISTRY }}
-                image-tag: ${{ needs.Build-Image.outputs.image_tag }}
+                image-tag: ${{ github.sha }}
 
 
     # BUILD DOCKER IMAGE
@@ -222,7 +222,7 @@ jobs:
             with:
                 repository: ${{ env.AWS_ECR_REPOSITORY }}
                 registry: ${{ env.AWS_ECR_REGISTRY }}
-                image-tag: ${{ needs.Build-Image.outputs.image_tag }}
+                image-tag: ${{ github.sha }}
 
 
 
@@ -267,7 +267,7 @@ jobs:
             with:
                 task-definition-name: My-Tech-Profile-TD-dev
                 container-name: my-tech-profile
-                image: ${{ env.AWS_ECR_REGISTRY }}/${{ env.AWS_ECR_REPOSITORY }}:${{ needs.Build-Case.outputs.image_tag }}
+                image: ${{ env.AWS_ECR_REGISTRY }}/${{ env.AWS_ECR_REPOSITORY }}:${{ github.sha }}
                 service: My-Tech-Profile-ECS-Service-Dev
                 cluster: My-Tech-Profile-ECS-Cluster-Dev
 
