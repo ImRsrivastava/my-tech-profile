@@ -1,0 +1,54 @@
+name: Build Docker Image & Tag
+description: Build Docker Image & Tag
+
+inputs:
+    repository:
+        required: true
+
+    registry:
+        required: true
+
+    image-tag:
+        required: true
+
+outputs:
+    image-tag:
+        description: Docker Image Tag
+        value: ${{ inputs.image-tag }}
+
+
+runs:
+    using: composite
+
+    steps:
+    
+      ##################################################
+      # Build Docker Image
+      ##################################################
+      - name: Build Docker Image
+        shell: bash
+        run: |
+            docker build -t ${{ inputs.repository }}:${{ inputs.image-tag }} .
+
+
+      # THE BELOW 2 STEPS ( Save Docker Image & Upload Docker Artifact ) WILL USE TO SAVE AND UPLOAD DOCKER IMAGE ARTIFACT INTO SEPARATE RUNNER
+      # BECAUSE EACH AND EVERY STEPS IN GITHUB ACTIONS PIPELINE RUNS ON SEPARATE RUNNER.
+
+      ##################################################
+      # Save Docker Image
+      ##################################################
+      - name: Save Docker Image
+        shell: bash
+        run: |
+            docker save ${{ inputs.repository }}:${{ inputs.image-tag }} -o image.tar
+
+
+      ##################################################
+      # Upload Docker Artifact
+      ##################################################
+      - name: Upload Docker Artifact
+        uses: actions/upload-artifact@v4
+        with: 
+            name: docker-image
+            path: image.tar
+

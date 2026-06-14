@@ -1,5 +1,5 @@
 name: Setup Node.Js
-description: Setup Node.js, Install dependencies, Execute Code Validations and Run Test Cases
+description: Setup Node.js and Install Project Dependencies
 
 inputs:
     node-version:
@@ -14,8 +14,11 @@ runs:
         uses: actions/setup-node@v4
         with:
             node-version: ${{ inputs.node-version }}
+            cache: npm                                      #   To avoid to setup Node.js every time in each run.
+            cache-dependency-path: package-lock.json        #   Cache manage file.
+
 
       - name: Install Dependencies
+        shell: bash
         run: |
             npm install
-        shell: bash

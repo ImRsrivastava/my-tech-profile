@@ -57,7 +57,7 @@ const About = () => {
                             <img src="./assets/images/user-profile.png" className="img-fluid" alt="user-profile.png" />
                         </div>
                         <div className="col-lg-8 content">
-                            <h2>Senior Backend &amp; AWS DevOps Engineer</h2>
+                            <h2>AWS Cloud &amp; DevOps Engineer</h2>
                             <div className="row py-3">
                                 <div className="col-lg-6">
                                     <ul>
@@ -102,7 +102,7 @@ const About = () => {
                     <div className="row gy-4 justify-content-center">
                         <div className="col-lg-12 content">
                             <div className="pt-3 mb-3">
-                                <strong> My technical strengths include: </strong>
+                                <strong> My technical strengths include (ImRsrivastava): </strong>
                                 <ul className="ul-about-content mt-2">
                                     <li className="ps-4 pb-1">
                                         <BsChevronDoubleRight className="text-theme fs-7" />&nbsp;
